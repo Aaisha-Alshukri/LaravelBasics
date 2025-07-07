@@ -64,3 +64,70 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 🚦 Laravel Routing – Branch: rounting
+
+This branch is dedicated to learning and implementing **Routing** in Laravel (v12.x), following the official Laravel documentation:  
+🔗 https://laravel.com/docs/12.x/routing
+
+---
+
+## 🔧 What is Routing in Laravel?
+
+Routing is the process of defining how your application responds to different URLs or HTTP requests.
+
+In Laravel, all web routes are defined in the file:  
+`routes/web.php`
+
+---
+
+## 🧭 Types of Routes
+
+### ➤ Basic Routes
+
+```php
+Route::get('/welcome', function () {
+    return 'Welcome Page';
+});
+
+➤ Route with Parameters
+Route::get('/user/{id}', function ($id) {
+    return "User ID: " . $id;
+});
+
+➤ Named Routes
+Route::get('/profile', [UserController::class, 'show'])->name('profile');
+
+➤ Route Groups : To apply middleware or prefixes to a group of routes:
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {
+        return 'Dashboard';
+    });
+});
+
+
+🧩 Controllers with Routes : You can connect routes to controller methods like this:
+use App\Http\Controllers\TodoController;
+
+Route::get('/todos', [TodoController::class, 'index']);
+Route::post('/todos', [TodoController::class, 'store']);
+
+
+
+
