@@ -1,74 +1,110 @@
-# 🛡️ Laravel CSRF Protection – Branch: csrf-protection
+# 🧭 Laravel Controllers – Branch: controllers
 
-This branch focuses on Laravel's built-in **Cross-Site Request Forgery (CSRF) protection**, based on the official docs:  
-🔗 https://laravel.com/docs/12.x/csrf
-
----
-
-## ❓ What is CSRF?
-
-CSRF (Cross-Site Request Forgery) is a type of attack where unauthorized commands are transmitted from a user that a web application trusts.  
-It usually targets state-changing requests like form submissions.
-
-Laravel automatically protects all **POST**, **PUT**, **PATCH**, and **DELETE** requests with CSRF tokens.
+This branch focuses on how to use **Controllers** in Laravel (v12.x), based on the official documentation:  
+🔗 https://laravel.com/docs/12.x/controllers
 
 ---
 
-## 🔐 CSRF Middleware
+## 📌 What are Controllers?
 
-The middleware responsible is:  
+Controllers are PHP classes used to group related request handling logic into a single class.  
+They help organize your application by separating routing from logic.
+
+Instead of defining logic in routes:
+
 ```php
-\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class
+Route::get('/users', function () {
+    return User::all();
+});
+
+You define it in a controller method:
+Route::get('/users', [UserController::class, 'index']);
 
 
-📝 Using CSRF Tokens in Forms: 
-In Blade templates, always include @csrf inside forms:
-<form method="POST" action="/submit">
-    @csrf
-    <!-- input fields -->
-</form>
-Alternatively, manually:
-<input type="hidden" name="_token" value="{{ csrf_token() }}">
+🛠️ Creating a Controller: Use Artisan to generate controllers:
+php artisan make:controller UserController 
+-- This creates a file in app/Http/Controllers/UserController.php
+
+🧩 Controller Methods Example
+class UserController extends Controller
+{
+    public function index()
+    {
+        return User::all();
+    }
+
+    public function show($id)
+    {
+        return User::findOrFail($id);
+    }
+}
+
+📦 Resource Controllers : Use the --resource flag to create CRUD methods automatically:
+
+php artisan make:controller ProductController --resource
+
+لإhis creates methods like:
+
+index()
+
+create()
+
+store()
+
+show()
+
+edit()
+
+update()
+
+destroy()
+
+Register as a resource route:
+Route::resource('products', ProductController::class);
+
+🎛️ Invokable Controllers:
+For single-action controllers:
+php artisan make:controller ShowProfile --invokable
+
+Use in route:
+Route::get('/profile', ShowProfile::class);
+
+🛡️ Controller Middleware : 
+You can apply middleware to controllers:
+public function __construct()
+{
+    $this->middleware('auth');
+}
+Apply only to specific methods:
+$this->middleware('auth')->only('store');
+$this->middleware('admin')->except('index');
+
+🧪 Route-Model Binding in Controllers
+Laravel can automatically inject models into controller methods:
+public function show(User $user)
+{
+    return $user;
+}
+This uses the {user} parameter in the route.
+
+📋 Summary
+
+Controllers help organize logic cleanly
+
+Use php artisan make:controller to generate them
+
+Use resource controllers for CRUD
+
+Support middleware, model binding, and more
 
 
-🧪 CSRF in Testing:
-In feature tests, you can disable CSRF protection using:
-$this->withoutMiddleware(
-    \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class
-);
 
-🚫 Excluding Routes from CSRF Protection:
-÷n some cases (e.g., APIs or webhooks), you may want to exclude routes.
 
-Edit the $except array in:
-app/Http/Middleware/VerifyCsrfToken.php
 
--- Example:
-protected $except = [
-    'payment/webhook',
-    'external-service/*',
-];
 
-🌐 CSRF with JavaScript (AJAX):
-If  you're sending requests via JavaScript (Axios, jQuery, etc.), make sure to include the CSRF token in headers.
 
-1. Add meta tag in Blade layout:
-<meta name="csrf-token" content="{{ csrf_token() }}">
 
-2. In JavaScript (example with Axios):
-axios.defaults.headers.common['X-CSRF-TOKEN'] = 
-    document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-📋 Summary:
-CSRF protects your app from forged form submissions.
-
-Always use @csrf in POST forms.
-
-Middleware handles validation automatically.
-
-Routes can be excluded if needed.
-
-JavaScript requests must include the token in headers.
 
 
 
